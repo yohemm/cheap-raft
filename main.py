@@ -2,23 +2,33 @@ from builtins import set, property
 
 import pygame
 import random
+import time
 
 class Object:
     def __init__(self):
-        self.name = inventory[random.randint(len(inventory))]
+        self.name = random.choice(list(inventory.keys()))
+
         self.quantity = random.randint(1, 5)
         self.pos= [-20, random.randint(0, SCREEN_SIZE[1]) - 400]
-        self.velocity = random.randint(4,12)
+        self.velocity = random.randint(1, 2)
+        self.imageSize = 60
+
+    def __repr__(self):
+        return ' name : ' + self.name + 'pos : ' + str(self.pos) + ' quantity : ' + str(self.quantity)
 
     def blit(self):
         if self.name == 'wood':
-            img = WOOD
+            img = pygame.transform.scale(WOOD, (self.imageSize,self.imageSize))
         elif self.name == 'leaf':
-            img = LEAF
+            img = pygame.transform.scale(LEAF, (self.imageSize,self.imageSize))
         else:
-            img = PLASTIC
+            img = pygame.transform.scale(PLASTIC, (self.imageSize,self.imageSize))
+        self.pos = [self.pos[0] + self.velocity + wavesEffect[0], self.pos[1] + self.velocity + wavesEffect[1]]
         SCREEN.blit(img, self.pos)
-        self.pos = [self.pos[0] - self.velocity, self.pos[1] - self.velocity]
+    def onClick(self):
+            inventory[self.name] += self.quantity
+
+
 
 class menuCreateBuild:
     def __init__(self, pos:tuple, size:tuple, bgColor:list):
@@ -115,7 +125,7 @@ class raft:
 
     def __repr__(self):
         result = 'position : '+ str(self.pos)
-        if not self.building == None:
+        if self.building is not None:
             result += 'build : '+ str(self.building)
         return result
 
@@ -134,7 +144,7 @@ class raft:
 
     def bliter(self):
         SCREEN.blit(RAFT, [self.pos[0] * SIZE, self.pos[1] * SIZE])
-        if not self.building == None:
+        if self.building is not None:
             self.building.blit(self.pos)
 
     def buy(self, build):
@@ -146,8 +156,8 @@ class raft:
         print(self.building)
 
     def onClick(self):
-        if self.building == None:
-            if not menuBuilding.selected == '':
+        if self.building is None:
+            if  menuBuilding.selected != '':
                 menuCreationBuildings[id].batiment = self.menu[id]
         else:
             global in_menu
@@ -155,6 +165,12 @@ class raft:
             for id in range(len(self.menu)):
                 menuCreationBuildings[id].posWithoutDecalage = [self.pos[0] * SIZE, self.pos[1] * SIZE]
                 menuCreationBuildings[id].batiment = self.menu[id]
+
+def spawnObject():
+    global nextSpawn
+    if time.time() > nextSpawn:
+        objects.append(Object())
+        nextSpawn += random.randint(1, 4)
 
 def sell(name, price):
     if inventory[name] >= price:
@@ -205,7 +221,7 @@ def suvivorSys():
     }
     max_personne = 0
     for rft in rafts:
-        if not rft.building == None:
+        if rft.building is not None:
             if factors.get(rft.building.name):
                 results[rft.building.name] +=1
             if factors.get('dortory'):
@@ -226,8 +242,7 @@ def suvivorSys():
         decalage += bliter.get_width() + 64
     if survivorMax < survivor:
         survivor = survivorMax
-    if survivor < 1:
-        survivor = 1
+    survivor = max(survivor, 1)
 
 def whatAround(pos_map):
     changers = [-1, 1]
@@ -276,6 +291,10 @@ bats = {
     'campfire': [pygame.transform.scale(pygame.image.load('src/mapping.png'), (SIZE, SIZE)), {'wood' : 4, 'leaf' : 3, 'plastic' : 0}],
 
 }
+
+
+nextSpawn = time.time() + random.randint(1, 4)
+objects = []
 
 survivorMax = 1
 
@@ -328,7 +347,6 @@ while True:
 
 
 
-
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
@@ -347,10 +365,21 @@ while True:
         for menuCreationBuilding in menuCreationBuildings:
             menuCreationBuilding.blit()
 
+    spawnObject()
+    for obj in objects:
+        wavesEffect = (random.randint(0, 3), random.randint(0, 3))
+        obj.blit()
+        if obj.pos[0] - (obj.imageSize // 2) < pygame.mouse.get_pos()[0] < obj.pos[0] + int(obj.imageSize*1.5) and obj.pos[1] - (obj.imageSize // 2) < pygame.mouse.get_pos()[1] < obj.pos[1] + obj.imageSize + int(obj.imageSize*1.5) and mousseClick:
+            obj.onClick()
+            objects.remove(obj)
+            del obj
+
+    print(inventory)
+
     menuBuilding.blit()
     ressource()
     suvivorSys()
-    CLOCK.tick(30)
+    CLOCK.tick(60)
     pygame.display.update()
     SCREEN.fill((0,0,0))
 
