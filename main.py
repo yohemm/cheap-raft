@@ -42,7 +42,7 @@ class menuCreateBuild:
                 if menuBuilding.selected == self.name:
                     pygame.draw.rect(SCREEN, (00,30,00,200), (self.pos, [self.size-5, self.size-5]))
                 SCREEN.blit(
-                    pygame.transform.scale(pygame.transform.rotate(RAFT, 45), (self.size, self.size)),
+                    pygame.transform.scale(pygame.transform.rotate(pygame.transform.scale(pygame.image.load('src/raft/simple.png'), (SIZE, SIZE)), 45), (self.size, self.size)),
                     self.pos)
                 SCREEN.blit(
                     pygame.transform.scale(pygame.transform.rotate(bats[self.name][0], 45), (self.size, self.size)),
@@ -124,6 +124,7 @@ class raft:
         if building is not None:
             self.building = self.batiment(building)
         self.menu = ['fishing', 'watter harvester', 'dormitory']
+        self.image = pygame.transform.scale(pygame.image.load('src/raft/simple.png'), (SIZE, SIZE))
 
     def __repr__(self):
         result = 'position : '+ str(self.pos)
@@ -143,9 +144,39 @@ class raft:
                 SCREEN.blit(bats[self.name][0], [pos[0] * SIZE, pos[1] * SIZE])
             else:
                 SCREEN.blit(bats['mapping'][0], [pos[0] * SIZE, pos[1] * SIZE])
+    def reloadImg(self, rafts):
+        horizontal = 'simple'
+        vertical = 'simple'
+        for raft in rafts:
+            if raft.pos[1] == self.pos[1]:
+                if raft.pos[0] == self.pos[0] - 1:
+                    vertical = 'right'
+                if raft.pos[0] == self.pos[0] + 1:
+                    if vertical == 'right':
+                        vertical = 'center'
+                        print(vertical + '-' + horizontal + '.png')
+                    else:
+                        vertical = 'left'
+            if raft.pos[0] == self.pos[0]:
+                if raft.pos[1] == self.pos[1] - 1:
+                    horizontal = 'down'
+                if raft.pos[1] == self.pos[1] + 1:
+                    if horizontal == 'down':
+                        print(vertical + '-' + horizontal + '.png' + str( self.pos))
+                        horizontal = 'middle'
+                    else:
+                        horizontal = 'up'
+        if vertical == 'simple' and horizontal == 'simple':
+            self.image = pygame.transform.scale(pygame.image.load('src/raft/simple.png'), (SIZE, SIZE))
+        elif vertical == 'simple' and not horizontal == 'simple':
+            self.image = pygame.transform.scale(pygame.image.load('src/raft/'+horizontal+'.png'), (SIZE, SIZE))
+        elif not vertical == 'simple' and horizontal == 'simple':
+            self.image = pygame.transform.scale(pygame.image.load('src/raft/'+vertical+'.png'), (SIZE, SIZE))
+        else:
+            self.image = pygame.transform.scale(pygame.image.load('src/raft/' + vertical +'-' +horizontal + '.png'), (SIZE, SIZE))
 
     def bliter(self):
-        SCREEN.blit(RAFT, [self.pos[0] * SIZE, self.pos[1] * SIZE])
+        SCREEN.blit(self.image, [self.pos[0] * SIZE, self.pos[1] * SIZE])
         if self.building is not None:
             self.building.blit(self.pos)
 
@@ -155,7 +186,6 @@ class raft:
             if not sell(mat, quantity):
                 return
         self.building = self.batiment(build)
-        print(self.building)
 
     def onClick(self):
         if self.building is None:
@@ -178,9 +208,9 @@ def ObjectSysteme():
     for obj in objects:
         wavesEffect = (random.randint(0, 3), random.randint(0, 3))
         obj.blit()
-        if obj.pos[0] - (obj.imageSize // 2) < pygame.mouse.get_pos()[0] < obj.pos[0] + int(obj.imageSize * 1.5) and \
-                obj.pos[1] - (obj.imageSize // 2) < pygame.mouse.get_pos()[1] < obj.pos[1] + obj.imageSize + int(
-                obj.imageSize * 1.5) and mousseClick:
+        if obj.pos[0] - int(obj.imageSize *1.5) < pygame.mouse.get_pos()[0] < obj.pos[0] + int(obj.imageSize*1.5) and \
+                obj.pos[1] - int(obj.imageSize*1.5) < pygame.mouse.get_pos()[1] < obj.pos[1] + int(
+                obj.imageSize *1.5) and mousseClick:
             obj.onClick()
             objects.remove(obj)
             del obj
@@ -277,6 +307,11 @@ def whatAround(pos_map):
 
     return result
 
+def addNewRaft(rafts):
+    if sell('wood', 10):
+        rafts.append(raft([pygame.mouse.get_pos()[0] // SIZE, pygame.mouse.get_pos()[1] // SIZE]))
+        for rft in rafts:
+            rft.reloadImg(rafts)
 
 pygame.init()
 
@@ -291,8 +326,6 @@ SIZE = 100
 SCREEN_SIZE = (1280, 640)
 
 WATTER = pygame.transform.scale(pygame.image.load('src/watter.png'), (SIZE, SIZE))
-
-RAFT = pygame.transform.scale(pygame.image.load('src/raft.png'), (SIZE, SIZE))
 
 inventory = {
     'wood' : 99,
@@ -356,8 +389,8 @@ while True:
                     arounds = whatAround(mousse_map)
                     for around in arounds:
                         if isinstance(around, raft):
-                            if sell('wood' , 10):
-                                rafts.append(raft([pygame.mouse.get_pos()[0] //SIZE , pygame.mouse.get_pos()[1] // SIZE]))
+                            addNewRaft(rafts)
+
                 else:
                     batimentSelected.onClick()
         else:
@@ -376,6 +409,15 @@ while True:
         if event.type == pygame.MOUSEBUTTONDOWN:
             mousseClick = True
         else: mousseClick = False
+
+        if event.type == pygame.KEYDOWN:
+            if pygame.key.get_pressed()[pygame.K_LCTRL]:
+                if event.key == pygame.K_w:
+                    inventory['wood'] += 5
+                if event.key == pygame.K_p:
+                    inventory['plastic'] += 5
+                if event.key == pygame.K_l:
+                    inventory['leaf'] += 5
 
     for x in range((SCREEN_SIZE[0]//SIZE) + 1):
         for y in range((SCREEN_SIZE[1] // SIZE) + 1):

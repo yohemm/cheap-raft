@@ -1,7 +1,7 @@
-import pygame
+
 import random
 
-class Waste:
+class waste:
     def __init__(self):
         self.name = random.choice(list(inventory.keys()))
 

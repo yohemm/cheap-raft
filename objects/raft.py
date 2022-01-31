@@ -1,12 +1,14 @@
+
 import pygame
 
-class Raft:
+class raft:
     def __init__(self, pos:tuple, building = None):
         self.pos = pos
         self.building = None
         if building is not None:
             self.building = self.batiment(building)
         self.menu = ['fishing', 'watter harvester', 'dormitory']
+        self.image = pygame.transform.scale(pygame.image.load('src/raft/simple.png'), (SIZE, SIZE))
 
     def __repr__(self):
         result = 'position : '+ str(self.pos)
@@ -21,26 +23,55 @@ class Raft:
         def __repr__(self):
             return 'name : '+ str(self.name)
 
-        def blit(self, pos, bats, screen, size):
+        def blit(self, pos):
             if bats.get(self.name):
-                screen.blit(bats[self.name][0], [pos[0] * size, pos[1] * size])
+                SCREEN.blit(bats[self.name][0], [pos[0] * SIZE, pos[1] * SIZE])
             else:
-                screen.blit(bats['mapping'][0], [pos[0] * size, pos[1] * size])
+                SCREEN.blit(bats['mapping'][0], [pos[0] * SIZE, pos[1] * SIZE])
+    def reloadImg(self, rafts):
+        horizontal = 'simple'
+        vertical = 'simple'
+        for raft in rafts:
+            if raft.pos[1] == self.pos[1]:
+                if raft.pos[0] == self.pos[0] - 1:
+                    vertical = 'right'
+                if raft.pos[0] == self.pos[0] + 1:
+                    if vertical == 'right':
+                        vertical = 'center'
+                        print(vertical + '-' + horizontal + '.png')
+                    else:
+                        vertical = 'left'
+            if raft.pos[0] == self.pos[0]:
+                if raft.pos[1] == self.pos[1] - 1:
+                    horizontal = 'down'
+                if raft.pos[1] == self.pos[1] + 1:
+                    if horizontal == 'down':
+                        print(vertical + '-' + horizontal + '.png' + str( self.pos))
+                        horizontal = 'middle'
+                    else:
+                        horizontal = 'up'
+        if vertical == 'simple' and horizontal == 'simple':
+            self.image = pygame.transform.scale(pygame.image.load('src/raft/simple.png'), (SIZE, SIZE))
+        elif vertical == 'simple' and not horizontal == 'simple':
+            self.image = pygame.transform.scale(pygame.image.load('src/raft/'+horizontal+'.png'), (SIZE, SIZE))
+        elif not vertical == 'simple' and horizontal == 'simple':
+            self.image = pygame.transform.scale(pygame.image.load('src/raft/'+vertical+'.png'), (SIZE, SIZE))
+        else:
+            self.image = pygame.transform.scale(pygame.image.load('src/raft/' + vertical +'-' +horizontal + '.png'), (SIZE, SIZE))
 
-    def bliter(self, image , screen, size):
-        screen.blit(image, [self.pos[0] * size, self.pos[1] * size])
+    def bliter(self):
+        SCREEN.blit(self.image, [self.pos[0] * SIZE, self.pos[1] * SIZE])
         if self.building is not None:
-            self.building.blit(self.pos,, screen, size)
+            self.building.blit(self.pos)
 
-    def buy(self, build, bats):
+    def buy(self, build):
         for mat in bats[build][1]:
             quantity = bats[build][1][mat]
             if not sell(mat, quantity):
                 return
         self.building = self.batiment(build)
-        print(self.building)
 
-    def onClick(self, menuBuilding, menuCreationBuildings):
+    def onClick(self):
         if self.building is None:
             if menuBuilding.selected != '':
                 menuCreationBuildings[id].batiment = self.menu[id]

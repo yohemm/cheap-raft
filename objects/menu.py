@@ -1,6 +1,6 @@
 import pygame
-
-class MenuCreateBuild:
+form '../service_locator' import
+class menuCreateBuild:
     def __init__(self, pos:tuple, size:tuple, bgColor:list, bats):
         class case:
             def __init__(self, name: str, pos: tuple, size: int):
@@ -8,11 +8,11 @@ class MenuCreateBuild:
                 self.pos = pos
                 self.size = size
 
-            def blit(self, screen, menuBuilding):
+            def blit(self, menuBuilding, bats, screen):
                 if menuBuilding.selected == self.name:
                     pygame.draw.rect(screen, (00,30,00,200), (self.pos, [self.size-5, self.size-5]))
                 screen.blit(
-                    pygame.transform.scale(pygame.transform.rotate(RAFT, 45), (self.size, self.size)),
+                    pygame.transform.scale(pygame.transform.rotate(pygame.transform.scale(pygame.image.load('src/raft/simple.png'), (SIZE, SIZE)), 45), (self.size, self.size)),
                     self.pos)
                 screen.blit(
                     pygame.transform.scale(pygame.transform.rotate(bats[self.name][0], 45), (self.size, self.size)),
@@ -41,16 +41,16 @@ class MenuCreateBuild:
     def blit(self, screen):
         pygame.draw.rect(screen, self.bgColor, (self.pos, self.size))
         for thiscase in self.cases:
-            thiscase.blit(self)
+            thiscase.blit()
 
     def onCLick(self, moussePos):
         for thiscase in self.cases:
             if thiscase.pos[0] < moussePos[0] < thiscase.pos[0] + thiscase.size and thiscase.pos[1] < moussePos[1] < thiscase.pos[1] + thiscase.size:
-                thiscase.onClick(self)
+                thiscase.onClick()
 
 
 
-class Menu_upgrade:
+class menu_upgrade:
     def __init__(self, pos:tuple, batiment:str , decalage:tuple):
         self.posWithoutDecalage = pos
         self.batiment = batiment
@@ -60,8 +60,8 @@ class Menu_upgrade:
     def __repr__(self):
         return 'pos raft : '+ str(self.pos)+ ' build : '+ str(self.batiment)
 
-    def onClick(self):
-        for mat  in bats[self.batiment][1]:
+    def onClick(self , bats, batimentSelected):
+        for mat in bats[self.batiment][1]:
             quantity = bats[self.batiment][1][mat]
             print(mat, quantity)
             if not sell(mat, quantity):
@@ -74,13 +74,13 @@ class Menu_upgrade:
             batimentSelected.building = batimentSelected.batiment(self.batiment)
             batimentSelected.menu.remove(self.batiment)
 
-    def blit(self):
+    def blit(self, screen, PORTHOLE, SIZE, RAFT):
         self.pos = [self.posWithoutDecalage[0] + self.decalage[0], self.posWithoutDecalage[1] + self.decalage[1]]
-        SCREEN.blit(pygame.transform.scale(PORTHOLE, [int(SIZE*0.75), int(SIZE*0.75)]), self.pos)
-        SCREEN.blit(pygame.transform.rotate(pygame.transform.scale(RAFT,(SIZE//2, SIZE//2)), 45), self.pos)
+        screen.blit(pygame.transform.scale(PORTHOLE, [int(SIZE*0.75), int(SIZE*0.75)]), self.pos)
+        screen.blit(pygame.transform.rotate(pygame.transform.scale(RAFT,(SIZE//2, SIZE//2)), 45), self.pos)
 
-        if bats.get(self.batiment):
-            build = bats[self.batiment][0]
+        if screen.get(self.batiment):
+            build = screen[self.batiment][0]
         else :
-            build = bats['mapping'][0]
-        SCREEN.blit(pygame.transform.rotate(pygame.transform.scale(build,(SIZE//2, SIZE//2)), 45), self.pos)
+            build = screen['mapping'][0]
+        screen.blit(pygame.transform.rotate(pygame.transform.scale(build,(SIZE//2, SIZE//2)), 45), self.pos)
