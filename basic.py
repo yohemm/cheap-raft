@@ -13,6 +13,9 @@ def whatAround(posMap:list, rafts):
             result.append(singleRaft)
     return result
 
+def mousseOver(entity):
+    return entity.position[0] < pygame.mouse.get_pos()[0] < entity.position[0] + entity.size[0] and andentity.position[1] < pygame.mouse.get_pos()[1] < entity.position[1] + entity.size[1]
+
 class Text:
     def __init__(self, text:str, height:int = 25, font:str='Supermercado.ttf', position:list = [0,0], color = (00,00,00)):
         self.position = position
@@ -67,6 +70,23 @@ class TextButton:
         self.text.blit(screen)
 
 class ImageButton:
-    def __init__(self, image, selected):
+    def __init__(self, pos, size, image, selected):
         self.selected = selected
         self.image = image
+        self.pos = pos
+        self.size = size
+
+    def click(self):
+        if pygame.mouse.get_pressed()[0] and mousseOver(self):self.selected = not self.selected
+
+class Menu:
+    def __init__(self, pos:list = [0,0], size:list = [50,50], btnImgs:list = [], texts:list = []):
+        self.scroll = 0
+        self.position = pos
+        self.size = size
+        self.images = btnImgs
+        self.texts = texts
+
+    def scroll(self):
+        pass
+

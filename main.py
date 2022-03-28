@@ -2,16 +2,17 @@ import pygame
 from game import *
 
 pygame.init()
-game = Game()
 UNITY = 100
-pygame.display.set_caption('Cheap Raft')
 SCREEN = pygame.display.set_mode((1200, 675))
+game = Game(SCREEN,UNITY)
+pygame.display.set_caption('Cheap Raft')
 while True:
+    SCREEN.fill((0,0,0))
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
         elif event.type == pygame.MOUSEBUTTONDOWN:
-            game.click(SCREEN, UNITY)
+            game.pressed()
         elif event.type == pygame.KEYDOWN:
             if pygame.key.get_pressed()[pygame.K_LCTRL]:
                 if event.key == pygame.K_w:
@@ -26,5 +27,6 @@ while True:
     game.menuVillager.blit(SCREEN)
     game.menuInventory.changeText('bois: ' + str(game.inventory['wood']) + '\nplastique: ' + str(game.inventory['plastic']) + '\nfeuillage: ' + str(game.inventory['leaf']))
     game.menuInventory.blit(SCREEN,  alignX='right')
+    game.blitMenu()
+
     pygame.display.update()
-    SCREEN.fill((0,0,0))
