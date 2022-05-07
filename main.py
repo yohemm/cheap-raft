@@ -21,12 +21,12 @@ while True:
                     game.inventory['plastic'] += 5
                 if event.key == pygame.K_l:
                     game.inventory['leaf'] += 5
-    game.blitMap(SCREEN, UNITY)
+    game.blitMap()
     game.reloadStat()
     game.menuVillager.changeText(str(game.villager) + ' villageois :\n food ' + str(game.villagerStat['food'] / game.villager * 100) + '%\n watter ' + str(game.villagerStat['watter'] / game.villager * 100) + '%\n hummor ' + str(game.villagerStat['hummor'] / game.villager * 100) + '%')
     game.menuVillager.blit(SCREEN)
     game.menuInventory.changeText('bois: ' + str(game.inventory['wood']) + '\nplastique: ' + str(game.inventory['plastic']) + '\nfeuillage: ' + str(game.inventory['leaf']))
     game.menuInventory.blit(SCREEN,  alignX='right')
-    game.blitMenu()
+    game.blitMenuBat()
 
     pygame.display.update()

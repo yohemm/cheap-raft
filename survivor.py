@@ -2,7 +2,7 @@ import pygame
 import random
 
 class Survivor:
-    def __init__(self, name:str = '', pos:list, size:list, sexe:bool, ):
+    def __init__(self, name:str = '', pos:list=[0,0], size:list=[], sexe:bool=None, ):
         self.position = pos
         self.size = size
         self.velocity = 30
