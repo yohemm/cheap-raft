@@ -1,5 +1,9 @@
 # CheapRaft
-A building video game.
+Premisses of 2D building simulation video game.
+
+The video game is a survivalist building.
+
+Your over watter, you need to enlarge your raft with to woods and wastes , to put structure on the place to eat, drink and grow your community.
 
 ## Getting Started
 
@@ -21,7 +25,7 @@ pip install pygame
 
 ## Usage
 
-1. Oppen main.py
+1. Open main.py
 
 ## Authors
 
