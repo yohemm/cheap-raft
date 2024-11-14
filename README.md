@@ -2,6 +2,12 @@
 # Cheap Raft
 
 <!-- ![Project Banner](path/to/banner/image)  -->
+## 🌟 Project Status
+
+> **Current Status**: **:red_circle: Discontinued** 
+> The projet is no maintained, it's just a litle demo
+
+---
 
 ## Overview
 
